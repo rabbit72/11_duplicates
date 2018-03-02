@@ -19,7 +19,7 @@ def get_all_files(directory):
             for id_file in id_files:
                 if id_file not in all_files:
                     all_files[id_file] = []
-                all_files[id_file].append(dir_path)
+                all_files[id_file].append(os.path.abspath(dir_path))
     return all_files
 
 
@@ -43,7 +43,9 @@ def print_duplicate(duplicate):
         print(
             'File: {0}\n'
             'Size: {1}\n'
-            'Paths: {2}'.format(file_name, file_size, paths))
+            'Paths:'.format(file_name, file_size))
+        for path in paths:
+            print(path)
         print(delimiter)
 
 
