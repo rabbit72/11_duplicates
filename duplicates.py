@@ -3,31 +3,27 @@ import os
 import collections
 
 
-def get_id_files(dir_path, files_names):
-    files_sizes = []
-    for file_name in files_names:
-        file_path = os.path.join(dir_path, file_name)
-        files_sizes.append(os.path.getsize(file_path))
-    id_files = zip(files_names, files_sizes)
-    return id_files
+def get_size(file_path):
+    return os.path.getsize(file_path)
 
 
-def get_all_id_files(directory):
-    all_id_files = collections.defaultdict(list)
+def get_files_locations(directory):
+    all_files_locations = collections.defaultdict(list)
     for dir_path, dir_names, files_names in os.walk(directory):
-        id_files = get_id_files(dir_path, files_names)
-        for id_file in id_files:
-            all_id_files[id_file].append(os.path.abspath(dir_path))
-    return all_id_files
+        for file_name in files_names:
+            file_path = os.path.join(dir_path, file_name)
+            file_size = get_size(file_path)
+            all_files_locations[(file_name, file_size)].append(file_path)
+    return all_files_locations
 
 
 def get_duplicate_files(directory):
     duplicates = {}
     one_unique_file = 1
-    all_id_files = get_all_id_files(directory)
-    for id_file, paths in all_id_files.items():
+    files_locations = get_files_locations(directory)
+    for (file_name, file_size), paths in files_locations.items():
         if len(paths) > one_unique_file:
-            duplicates[id_file] = paths
+            duplicates[(file_name, file_size)] = paths
     return duplicates
 
 
@@ -40,8 +36,7 @@ def print_duplicates(duplicate):
             'File: {0}\n'
             'Size: {1}\n'
             'Paths:'.format(file_name, file_size))
-        for path in paths:
-            print(path)
+        print('\n'.join(paths))
         print(delimiter)
 
 
